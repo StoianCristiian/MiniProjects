@@ -1,0 +1,82 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url('imagini/blue_purple_galaxy_stars_nebulae_clusters_space_hd_space.jpg') no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.slides{
+  text-align: center;
+  height: auto;
+  width: auto;
+}
+
+.slider {
+  position: relative;
+  text-align: center;
+  align-items: center;
+  width: auto;
+  height: auto;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37)
+}
+
+.slides img {
+  width: 100%;
+  display: none;
+}
+
+img.displaySlide
+{
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  border: 0;
+  animation-name: startfade;
+  animation-duration: 1.5s;
+}
+
+img.endSlide{
+  animation-name: endfade;
+  animation-duration: 1.5s;
+}
+
+.slides button{
+  position: absolute;
+  top: 42%;
+  border-radius: 100%;
+  /* transform: translate(-50%); */
+  font-size: 36px;
+  background-color: rgb(45, 3, 84);
+  color:rgb(255, 255, 255);
+  border: none;
+  cursor: pointer;
+  padding: 1px 15px;
+  border: 5px solid whitesmoke;
+}
+
+.prev{
+  left: 20px;
+}
+
+.next{
+  right: 20px;
+}
+
+@keyframes startfade{
+  from{opacity: .5}
+  to{opacity: 1}
+}
