@@ -1,1 +1,1 @@
-
+Cititi readme din 'imagini'
