@@ -1,0 +1,97 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: greenyellow;
+}
+
+.InfoBoard {
+  display: flex;
+  width: 100%;
+}
+
+h1 {
+  background-color: rgb(0, 121, 12);
+  color: rgb(255, 255, 255);
+  border-radius: 100px;
+  box-shadow: 10px 10px 10px black;
+  width: 250px;
+  text-align: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 50px;
+  height: 80px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+h2 {
+  margin-left: 28%;
+  background-color: rgb(0, 121, 12);
+  color: white;
+  border-radius: 100px;
+  box-shadow: 10px 10px 10px black;
+  padding: 10px;
+}
+
+.BoardGame {
+  display: grid;
+  background: url(imagini/pngtree-cartoon-dirt-ground-layer-fun-game-texture-for-level-design-image_13880734.png) no-repeat;
+  background-size: 700px;
+  align-items: center;
+  border-radius: 50px;
+  justify-content: center;
+  width: 600px;
+  height: 310px;
+  padding-top: 50px;
+  grid-template-columns: repeat(4,120px);
+  place-items: center;
+  grid-gap: 10px;
+  margin-top: 70px;
+  box-shadow: 10px 10px 10px black;
+}
+
+.hole {
+  width: 100px;
+  height: 100px;
+  background: url(imagini/hole.png) no-repeat;
+  background-size: 100px;
+}
+
+.hole:hover {
+  cursor: pointer;
+}
+
+.hole.active {
+  background: url(imagini/png-clipart-jumping-mole-cartoon-whack-s-comics-mammal-removebg-preview.png) no-repeat;
+  background-size: 100px;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  width: 100px;
+  height: 100px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  background-color: rgb(0, 121, 12);
+  border: solid 3px black;
+  border-radius: 30px;
+  box-shadow: 10px 10px 10px black;
+  font-size: large;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  box-shadow: inset 5px 5px 5px black;
+}
