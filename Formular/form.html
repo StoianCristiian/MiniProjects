@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formular</title>
+  <link rel="stylesheet" href="form.css">
+</head>
+<body>
+  <h1>Formular</h1>
+  
+  <form class="forms">
+    <div class="names-box cutie">
+
+      <div class="field">
+        <label for="nume">Nume</label>
+        <input type="text" name="nume" id="nume">
+        <span class="error-message" id="nume-error"></span>
+      </div>
+
+      <div class="field">
+        <label for="prenume">Prenume</label>
+        <input type="text" name="prenume" id="prenume" >
+        <span class="error-message" id="prenume-error"></span>
+      </div>
+
+    </div>
+    
+    <div class="email cutie">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" >
+      <span class="error-message" id="email-error"></span>
+    </div>
+
+    <div class="message cutie">
+      <label for="msg">Mesaj</label>
+      <textarea id="msg" name="message" rows="4" ></textarea>
+      <span class="error-message" id="message-error"></span>
+    </div>
+
+    <button class="btn">Submit</button>
+  </form>
+    
+  <script src="form.js"></script>
+</body>
+</html>
