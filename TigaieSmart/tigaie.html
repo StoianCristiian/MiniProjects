@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tigaie Inteligentă</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Corpul Tigăii */
+        .pan_body {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle at 30% 30%, #4a4a4a, #1a1a1a);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+            z-index: 2;
+            border: 5px solid #2a2a2a;
+            overflow: hidden; /* Important pentru capac */
+        }
+
+        .pan_inner {
+            width: 280px;
+            height: 280px;
+            background-color: #111;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Efect de teflon */
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMjIyIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMzMzMiLz4KPC9zdmc+');
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px; /* Pentru emoji-uri mâncare */
+            user-select: none;
+            z-index: 1;
+        }
+
+        /* Capac Smart AR */
+        .lid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(200, 220, 255, 0.2); /* Sticlă transparentă */
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.3);
+            z-index: 5;
+            pointer-events: none; /* Lasă click-urile să treacă */
+            opacity: 0;
+            transition: opacity 0.5s, backdrop-filter 0.5s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .lid.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Abur */
+        .lid.steamy {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px); /* Efect de aburire */
+        }
+
+        /* Proiecție AR */
+        .ar-projection {
+            font-size: 80px;
+            opacity: 0;
+            filter: drop-shadow(0 0 10px cyan); /* Efect hologramă */
+            transition: opacity 0.3s;
+            transform: scale(0.9);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .lid.ar-active .ar-projection {
+            opacity: 1;
+            animation: holo-flicker 2s infinite;
+        }
+
+        @keyframes holo-flicker {
+            0% { opacity: 0.8; }
+            5% { opacity: 0.9; }
+            10% { opacity: 0.8; }
+            15% { opacity: 1; }
+            50% { opacity: 0.9; filter: drop-shadow(0 0 15px cyan); }
+            100% { opacity: 0.8; }
+        }
+
+        /* Indicator AR */
+        .ar-badge {
+            position: absolute;
+            top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: cyan;
+            border: 1px solid cyan;
+            padding: 2px 5px;
+            background: rgba(0, 50, 50, 0.8);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .lid.ar-active .ar-badge {
+            opacity: 1;
+        }
+        .camera-lens {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle at 30% 30%, #444, #000);
+            border: 2px solid #555;
+            border-radius: 50%;
+            position: absolute;
+            left: -5px; /* Pe marginea dinspre tigaie */
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        .camera-lens::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            width: 3px;
+            height: 3px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+        }
+
+        /* Mânerul */
+        .handle {
+            width: 250px;
+            height: 60px; 
+            background: linear-gradient(to bottom, #dcdcdc, #a9a9a9);
+            border-radius: 0 30px 30px 0;
+            position: relative;
+            z-index: 1;
+            margin-left: -20px; /* Conectare vizuală */
+            display: flex;
+            align-items: center;
+            justify-content: start; /* Centrat */
+            gap: 15px; /* Spațiu între ecran și buton */
+            padding: 0 20px 0 40px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Container Tehnologie */
+        .tech-interface {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #222;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            box-shadow: inset 0 0 5px #000;
+        }
+
+        /* Ecranul */
+        .screen {
+            background-color: #000;
+            color: #0f0; /* LED verde */
+            font-family: 'Courier New', monospace;
+            padding: 2px;
+            width: 70px; /* Mai mic */
+            font-weight: bold;
+            display: flex;
+            flex-direction: column; /* Vertical */
+            justify-content: center;
+            font-size: 9px;
+            line-height: 1.1;
+            border-right: 1px solid #333;
+            padding-right: 5px;
+        }
+
+        .screen span {
+            display: block;
+            white-space: nowrap;
+        }
+        
+        .label {
+            display: none; /* Ascundem etichetele vechi pentru un look mai curat */
+        }
+
+        /* Butonul Rotativ - Integrat */
+        .knob-container {
+            position: relative;
+            width: 25px; 
+            height: 40px; 
+            background-color: #1a1a1a;
+            border-radius: 4px;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.8);
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+
+        .knob {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #222, #555, #222); /* Efect cilindric vertical */
+            cursor: ns-resize; /* Cursor sus-jos */
+            position: relative;
+            /* Model zimțat orizontal */
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 4px,
+                rgba(0,0,0,0.8) 4px,
+                rgba(0,0,0,0.8) 6px
+            );
+            background-size: 100% 20px;
+            background-position: 0 0;
+            transition: background-position 0.1s ease-out;
+        }
+        
+        /* Eliminăm indicatorul vechi */
+        .knob::after {
+            display: none;
+        }
+
+        .controls-info {
+            position: absolute;
+            bottom: -50px;
+            right: 0;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 14px;
+            width: 200px;
+        }
+
+        .simulation-controls {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.8);
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .sim-btn {
+            padding: 8px 16px;
+            cursor: pointer;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 3px 3px 6px #d1d9e6, -3px -3px 6px #ffffff;
+            transition: all 0.2s ease;
+        }
+        
+        .sim-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff;
+        }
+
+        .sim-btn:active {
+            transform: translateY(0);
+            box-shadow: inset 3px 3px 6px #d1d9e6, inset -3px -3px 6px #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Controale Simulare -->
+        <div class="simulation-controls">
+            <button class="sim-btn" onclick="addFood('🥩', 'Friptură', 250)">Adaugă Carne</button>
+            <button class="sim-btn" onclick="addFood('🥦', 'Legume', 150)">Adaugă Legume</button>
+            <button class="sim-btn" onclick="toggleLid()">Capac ON/OFF</button>
+            <button class="sim-btn" onclick="addFood(null, null, 0)">Golește Tigaia</button>
+        </div>
+
+        <!-- Tigaia -->
+        <div class="pan_body">
+            <div class="pan_inner" id="panContent"></div>
+            <!-- Capacul AR -->
+            <div class="lid" id="smartLid">
+                <div class="ar-badge">AR VISION: ACTIVE</div>
+                <div class="ar-projection" id="arContent"></div>
+            </div>
+        </div>
+
+        <!-- Mânerul cu tehnologie -->
+        <div class="handle">
+            
+            <!-- Camera Lens -->
+            <div class="camera-lens" title="Smart Camera"></div>
+
+            <!-- Interfață Integrată -->
+            <div class="tech-interface">
+                <!-- Ecran Vertical -->
+                <div class="screen" id="mainScreen">
+                    <span id="tempDisplay">T: 20°</span>
+                    <span id="weightDisplay">G: 0g</span>
+                    <span id="foodDisplay">--</span>
+                </div>
+
+                <!-- Buton Rotativ (Scroll) -->
+                <div class="knob-container">
+                    <div class="knob" id="tempKnob" title="Scroll pentru Temperatură"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="controls-info">
+            <p><strong>Status:</strong> <span id="status">Inactiv</span></p>
+            <p><strong>Țintă:</strong> <span id="targetDisplay">20°C</span></p>
+            <small>Rotește rotița ← → pentru temp.</small>
+        </div>
+    </div>
+
+    <script>
+        const knob = document.getElementById('tempKnob');
+        const tempDisplay = document.getElementById('tempDisplay');
+        const weightDisplay = document.getElementById('weightDisplay');
+        const foodDisplay = document.getElementById('foodDisplay');
+        const targetDisplay = document.getElementById('targetDisplay');
+        const statusDisplay = document.getElementById('status');
+        const panContent = document.getElementById('panContent');
+        const smartLid = document.getElementById('smartLid');
+        const arContent = document.getElementById('arContent');
+        
+        // Stare
+        let scrollPosition = 0;
+        let targetTemp = 20; 
+        let currentTemp = 20; 
+        let isHeating = false;
+        let currentWeight = 0;
+        let currentFood = null;
+        let currentEmoji = null;
+        let noFoodTimer = 0; 
+        let isLidOn = false;
+
+        // Simulare Adăugare Mâncare (Camera & Cântar)
+        window.addFood = function(emoji, name, weight) {
+            const panInner = document.getElementById('panContent');
+            if (emoji) {
+                panInner.innerHTML = emoji;
+                currentEmoji = emoji;
+                currentWeight = weight;
+                currentFood = name;
+                foodDisplay.innerText = name ? name.toUpperCase() : '--';
+                // Actualizăm și proiecția AR
+                arContent.innerText = emoji; 
+            } else {
+                panInner.innerHTML = '';
+                currentEmoji = '';
+                currentWeight = 0;
+                currentFood = null;
+                foodDisplay.innerText = "--";
+                arContent.innerText = '';
+            }
+            // Update imediat la cântar
+            weightDisplay.innerText = `G: ${currentWeight}g`;
+        };
+
+        window.toggleLid = function() {
+            isLidOn = !isLidOn;
+            if (isLidOn) {
+                smartLid.classList.add('visible');
+            } else {
+                smartLid.classList.remove('visible', 'steamy', 'ar-active');
+            }
+        };
+        
+        // Logica pentru rotația butonului (interacțiune simplificată cu scroll)
+        knob.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            // Ajustăm scroll-ul
+            if (e.deltaY < 0) {
+                scrollPosition -= 4; // Mutăm zimții în sus
+                targetTemp += 5;
+            } else {
+                scrollPosition += 4; // Mutăm zimții în jos
+                targetTemp -= 5;
+            }
+
+            // Limite temperatură (0 - 300 grade)
+            if (targetTemp < 0) targetTemp = 0;
+            if (targetTemp > 300) targetTemp = 300;
+            
+            updateUI();
+        });
+
+        // Alternativă drag (click și mișcare sus/jos - pentru vertical)
+        let isDragging = false;
+        let startY = 0; 
+
+        knob.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startY = e.clientY; 
+            document.body.style.cursor = 'ns-resize'; 
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const delta = startY - e.clientY;
+            if (Math.abs(delta) > 5) { // Sensibilitate
+                if (delta > 0) { // Drag sus -> crește temp
+                    scrollPosition -= 2; 
+                    targetTemp += 2;
+                } else { // Drag jos -> scade temp
+                    scrollPosition += 2; 
+                    targetTemp -= 2;
+                }
+                
+                // Limite temperatură
+                if (targetTemp < 0) targetTemp = 0;
+                if (targetTemp > 300) targetTemp = 300;
+                
+                startY = e.clientY;
+                updateUI();
+            }
+        });
+
+        function updateUI() {
+            // Animăm poziția fundalului pe axa Y pentru vertical
+            knob.style.backgroundPosition = `0 ${scrollPosition}px`;
+            
+            targetDisplay.innerText = `${targetTemp}°C`;
+            
+            // Verificăm dacă pornim încălzirea
+            if (targetTemp > currentTemp) {
+                statusDisplay.innerText = "Se încălzește...";
+                statusDisplay.style.color = "orange";
+                isHeating = true;
+            } else if (targetTemp < currentTemp) {
+                statusDisplay.innerText = "Se răcește...";
+                statusDisplay.style.color = "blue";
+                isHeating = true; // Tehnic, tot proces activ e
+            } else {
+                statusDisplay.innerText = "Stabil";
+                statusDisplay.style.color = "green";
+                isHeating = false;
+            }
+        }
+
+        // Simulare fizică termică (loop)
+        setInterval(() => {
+            // Oprire automată dacă tigaia e goală și caldă
+            if (!currentFood && targetTemp > 0) {
+                noFoodTimer++;
+                // 100 ticks * 100ms = 10 secunde
+                if (noFoodTimer > 100) {
+                    targetTemp = 0;
+                    statusDisplay.innerText = "AUTO-OFF (Tigaie goală)";
+                    statusDisplay.style.color = "red";
+                    // Resetăm și UI-ul pentru a reflecta oprirea, dar păstrăm mesajul de eroare
+                    knob.style.backgroundPosition = `0 0`; // Reset vizual knob (opțional)
+                    scrollPosition = 0;
+                    // Scurtcircuităm updateUI standard pentru a nu suprascrie mesajul imediat
+                    isHeating = false;
+                } else if (noFoodTimer > 70) {
+                     // Avertisment ultimele 3 secunde
+                     statusDisplay.innerText = `Oprire în ${(100 - noFoodTimer)/10}s...`;
+                     statusDisplay.style.color = "red";
+                }
+            } else {
+                noFoodTimer = 0;
+            }
+
+            if (currentTemp < targetTemp) {
+                // Încălzire (mai rapidă)
+                currentTemp += 1;
+            } else if (currentTemp > targetTemp) {
+                // Răcire (mai lentă)
+                currentTemp -= 0.5;
+            }
+            
+            // Rotunjire pentru afișare curată
+            let displayTemp = Math.round(currentTemp);
+            tempDisplay.innerText = `T: ${displayTemp}°C`;
+
+            // Efect fonic/vizual gătit
+            if (currentFood && currentTemp > 100) {
+                 statusDisplay.innerText = `Se gătește ${currentFood}...`;
+                 // Mică animație de fierbere (tremurat)
+                 if (Math.random() > 0.5) {
+                     panContent.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 2 - 1}deg)`;
+                 }
+            } else {
+                panContent.style.transform = 'translate(-50%, -50%)';
+            }
+            
+            // Logica suplimentară de stare
+            if (!currentFood || currentTemp <= 100) {
+                 if (Math.abs(currentTemp - targetTemp) < 1 && isHeating) {
+                    statusDisplay.innerText = "Temperatură atinsă";
+                    statusDisplay.style.color = "green";
+                } else if (!isHeating && noFoodTimer <= 70) {
+                    // Evităm suprascrierea mesajului de auto-off warning
+                     statusDisplay.innerText = "Inactiv";
+                     statusDisplay.style.color = "black";
+                }
+            }
+
+            // Gestionare Capac AR și Abur
+            if (isLidOn) {
+                if (currentTemp > 80) {
+                    smartLid.classList.add('steamy');
+                    // Activăm AR dacă e prea mult abur și nu vedem mâncarea
+                    smartLid.classList.add('ar-active');
+                    // Mesaj prioritar
+                    statusDisplay.innerText = "Mod AR: Activat (Abur)";
+                    statusDisplay.style.color = "cyan";
+                } else {
+                    smartLid.classList.remove('steamy', 'ar-active');
+                }
+            }
+
+            // Logica Display Roșu la Pericol (Hot Surface)
+            const mainScreen = document.getElementById('mainScreen');
+            // Considerăm "încins" peste 50 de grade
+            if (currentTemp > 50) {
+                 mainScreen.className = "screen danger";
+                 mainScreen.style.color = "#ff3333"; // Asigurăm culoarea inline
+                 mainScreen.style.borderColor = "red";
+                 // Adăugăm un efect de pulsare pentru pericol
+                 if (currentTemp > 100) {
+                     mainScreen.style.boxShadow = `0 0 ${Math.abs(Math.sin(Date.now()/200))*10 + 5}px red`;
+                 } else {
+                     mainScreen.style.boxShadow = "0 0 5px red";
+                 }
+            } else {
+                 mainScreen.className = "screen";
+                 mainScreen.style.color = "#0f0"; // Revenire la verde
+                 mainScreen.style.borderColor = "#333";
+                 mainScreen.style.boxShadow = "none";
+            }
+
+            // Schimbare culoare "mancare" sau fundal tigaie în funcție de temperatură
+            const panInner = document.querySelector('.pan_inner');
+            if (currentTemp > 50) {
+                 // Ușor efect de roșeață la temperaturi mari
+                 let redAmount = Math.min((currentTemp - 50) / 250 * 50, 50); 
+                 panInner.style.boxShadow = `inset 0 0 ${redAmount}px rgba(255, 50, 0, ${redAmount/100})`;
+            } else {
+                panInner.style.boxShadow = 'none';
+            }
+
+        }, 100); // Actualizare la fiecare 100ms
+    </script>
+</body>
+</html>
